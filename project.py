@@ -1,9 +1,5 @@
-patient = 'John Smith'
-age = 20
-print(patient)
-print(age)
-is_a_new_patient = True
-if is_a_new_patient :
-    print(True)
-else:
-    print(False)
+birth_year = input('Birth year: ')
+print(type(birth_year))
+age= 2026 - int(birth_year)
+print(type(age))
+print (age)
