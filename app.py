@@ -1,14 +1,9 @@
 import streamlit as st
-from google import genai
-
-# 1. New Upgraded Client Configuration
-import streamlit as st
 import os
 from google import genai
 
 # 1. New Upgraded Client Configuration
 API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=API_KEY)
 client = genai.Client(api_key=API_KEY)
 
 # 2. UI Frontend Design
