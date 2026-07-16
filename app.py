@@ -63,13 +63,35 @@ if st.button("Generate My Blueprint", type="primary"):
                 st.success("Blueprint Rendered Successfully!")
                 st.markdown(response.text)
                 
-                # 7. Safe Contextual Download Button Implementation
                 st.markdown("---")
-                st.download_button(
-                    label="📥 Download Blueprint as Markdown",
-                    data=response.text,
-                    file_name=f"{app_name.lower().replace(' ', '_')}_blueprint.md",
-                    mime="text/markdown"
+                
+                # 7. Dynamic Two-Column Action Layout (Download & Paywall Shortcut)
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.download_button(
+                        label="📥 Download Blueprint as Markdown",
+                        data=response.text,
+                        file_name=f"{app_name.lower().replace(' ', '_')}_blueprint.md",
+                        mime="text/markdown",
+                        use_container_width=True
+                    )
+                    
+                with col2:
+                    # ⚠️ ACTION ITEM: Replace the URL below with your actual Gumroad page link
+                    gumroad_payment_url = "https://yourusername.gumroad.com/l/your-product-id"
+                    
+                    st.link_button(
+                        label="⚡ Get Pre-built Template & Code (RM25)",
+                        url=gumroad_payment_url,
+                        type="primary",
+                        use_container_width=True
+                    )
+                
+                st.caption(
+                    "💡 **Why build from scratch?** Click the premium link above to instantly download the "
+                    "fully configured system architecture, plug-and-play scripts, and ready-to-import templates "
+                    "generated for this exact workflow."
                 )
                 
             except Exception as e:
