@@ -20,8 +20,59 @@ def generate_simulated_blueprint(role, skill, tools, problem):
     tools_lower = tools.lower() if tools else ""
     role_lower = role.lower()
 
-    # --- SCENARIO 1: FORGETTING FOLLOW-UPS / EMAIL MANAGEMENT ---
-    if any(k in prob_lower or k in tools_lower for k in ["follow-up", "forget", "missed", "remind", "reply", "tracking", "email", "gmail"]):
+    # --- SCENARIO 1: WHATSAPP / CUSTOMER LEADS (PRIORITIZED FIRST) ---
+    if any(k in prob_lower or k in tools_lower for k in ["whatsapp", "wa", "customer", "lead", "client", "business", "sales", "crm"]):
+        title = "Inbound Customer Intake & CRM Pipeline"
+        bottlenecks = [
+            "Scattered Chats: Work inquiries get mixed with family or friend group notifications, leading to delayed responses.",
+            "No Status Visibility: Inability to track where clients are in your pipeline (e.g., waiting, quoted, paid)."
+        ]
+        recommended_system = "Standardized Messaging Templates & visual Kanban tracking."
+        primary_tools = "WhatsApp Business (for Quick Replies)"
+        central_hub = "Notion Board or Trello (simple Inbox-to-Done pipeline)"
+        actions = [
+            "Program Quick Replies: Inside WhatsApp Business, create automated shortcuts like '/intro' and '/pricing' to reply to customers in under 5 seconds.",
+            "Set Up a Tracking Board: Build a simple visual board with columns: 'Inbox', 'Quoting', 'Active Project', and 'Completed'.",
+            "Establish Customer Response Batching: Only reply to non-emergency business chats twice a day (e.g., 10:00 AM and 4:00 PM) to protect your deep-work hours."
+        ]
+        asset_title = "WHATSAPP BUSINESS QUICK REPLY SOP"
+        asset = """===================================================
+Hello [Name]! Thanks for reaching out.
+I've received your request regarding: "[Topic]".
+To help me serve you best, could you reply with:
+1. Your project deadline:
+2. Your budget estimation:
+Our team will review this and respond with a formal quote by [Time].
+=================================================== """
+
+    # --- SCENARIO 2: NOTION CONFUSION / OVER-ENGINEERING ---
+    elif any(k in prob_lower or k in tools_lower for k in ["notion", "confusing", "clutter", "complex", "system", "workspace"]):
+        title = "Notion Minimalism & Anti-Clutter Setup"
+        bottlenecks = [
+            "The Infinite Canvas Trap: Notion's open-ended templates create massive setup friction and decision fatigue.",
+            "High Maintenance Cost: Spending more time designing database relations, icons, and tags than doing actual work."
+        ]
+        recommended_system = "A Single-Page Minimalist Sandbox. Drop nested structures, relational rollups, and flashy dashboards. Rebuild around a flat, text-first capture log."
+        primary_tools = "Notion (stripped down to raw plain-text pages)"
+        central_hub = "Google Keep, Apple Notes, or Trello (for ultra-fast capture)"
+        actions = [
+            "The One-Page Rule: Delete your complex database systems. Create a single blank page in Notion called 'Today' and do all your work there.",
+            "Disable Community Templates: Avoid importing bloated multi-page workspace setups that clutter your sidebar and slow down load times.",
+            "Shift to Fast Capture: Use Google Keep or a physical notepad for quick raw notes on-the-go, then paste them to Notion once a week."
+        ]
+        asset_title = "NOTION SKELETON SETUP (COPY & PASTE TO A BLANK PAGE)"
+        asset = """# 🎯 Daily Focus (Max 3 items)
+- [ ] Action item 1
+- [ ] Action item 2
+
+# 📥 Quick Brain Dump (Process daily)
+- Ideas, quick notes, and incoming random thoughts go here...
+
+# 📂 Current Projects Reference
+- Keep links to your active working documents here. No databases, just simple lists!"""
+
+    # --- SCENARIO 3: FORGETTING FOLLOW-UPS / EMAIL MANAGEMENT ---
+    elif any(k in prob_lower or k in tools_lower for k in ["follow-up", "forget", "missed", "remind", "reply", "tracking", "email", "gmail"]):
         title = "Automated Follow-Up & Gmail Triage System"
         bottlenecks = [
             "Passive Inbox Trap: Leaving emails in the inbox without active 'Snooze' or 'Task' flags forces you to rely on raw memory.",
@@ -52,33 +103,7 @@ def generate_simulated_blueprint(role, skill, tools, problem):
 [ ] The Task Convert: If an email requires complex action, add it to your Tasks sidebar with a due date.
 [ ] Waiting Label: Tag outgoing emails that need a reply with '#Waiting'. Review this tag twice a week."""
 
-    # --- SCENARIO 2: NOTION CONFUSION / OVER-ENGINEERING ---
-    elif any(k in prob_lower or k in tools_lower for k in ["notion", "confusing", "clutter", "complex", "system", "workspace"]):
-        title = "Notion Minimalism & Anti-Clutter Setup"
-        bottlenecks = [
-            "The Infinite Canvas Trap: Notion's open-ended templates create massive setup friction and decision fatigue.",
-            "High Maintenance Cost: Spending more time designing database relations, icons, and tags than doing actual work."
-        ]
-        recommended_system = "A Single-Page Minimalist Sandbox. Drop nested structures, relational rollups, and flashy dashboards. Rebuild around a flat, text-first capture log."
-        primary_tools = "Notion (stripped down to raw plain-text pages)"
-        central_hub = "Google Keep, Apple Notes, or Trello (for ultra-fast capture)"
-        actions = [
-            "The One-Page Rule: Delete your complex database systems. Create a single blank page in Notion called 'Today' and do all your work there.",
-            "Disable Community Templates: Avoid importing bloated multi-page workspace setups that clutter your sidebar and slow down load times.",
-            "Shift to Fast Capture: Use Google Keep or a physical notepad for quick raw notes on-the-go, then paste them to Notion once a week."
-        ]
-        asset_title = "NOTION SKELETON SETUP (COPY & PASTE TO A BLANK PAGE)"
-        asset = """# 🎯 Daily Focus (Max 3 items)
-- [ ] Action item 1
-- [ ] Action item 2
-
-# 📥 Quick Brain Dump (Process daily)
-- Ideas, quick notes, and incoming random thoughts go here...
-
-# 📂 Current Projects Reference
-- Keep links to your active working documents here. No databases, just simple lists!"""
-
-    # --- SCENARIO 3: STUDENTS & ACADEMICS ---
+    # --- SCENARIO 4: STUDENTS & ACADEMICS ---
     elif role_lower == "student" or any(k in prob_lower or k in tools_lower for k in ["study", "assignment", "homework", "exam", "class"]):
         title = "Student Deadline & Focus Scheduler"
         bottlenecks = [
@@ -98,31 +123,6 @@ def generate_simulated_blueprint(role, skill, tools, problem):
 [ ] Slide Prep: Download and organize incoming lecture slides into specific Google Drive folders.
 [ ] Buffer Blocks: Allocate two 90-minute 'Catch-Up Blocks' on Thursday and Friday to manage overrun homework.
 [ ] Task Checkoff: Archive completed class materials out of your immediate workspace."""
-
-    # --- SCENARIO 4: WHATSAPP / CUSTOMER LEADS ---
-    elif any(k in prob_lower or k in tools_lower for k in ["whatsapp", "customer", "lead", "client", "business", "sales", "crm"]):
-        title = "Inbound Customer Intake & CRM Pipeline"
-        bottlenecks = [
-            "Scattered Chats: Work inquiries get mixed with family or friend group notifications, leading to delayed responses.",
-            "No Status Visibility: Inability to track where clients are in your pipeline (e.g., waiting, quoted, paid)."
-        ]
-        recommended_system = "Standardized Messaging Templates & visual Kanban tracking."
-        primary_tools = "WhatsApp Business (for Quick Replies)"
-        central_hub = "Notion Board or Trello (simple Inbox-to-Done pipeline)"
-        actions = [
-            "Program Quick Replies: Inside WhatsApp Business, create automated shortcuts like '/intro' and '/pricing' to reply to customers in under 5 seconds.",
-            "Set Up a Tracking Board: Build a simple visual board with columns: 'Inbox', 'Quoting', 'Active Project', and 'Completed'.",
-            "Establish Customer Response Batching: Only reply to non-emergency business chats twice a day (e.g., 10:00 AM and 4:00 PM) to protect your deep-work hours."
-        ]
-        asset_title = "WHATSAPP BUSINESS QUICK REPLY SOP"
-        asset = """===================================================
-Hello [Name]! Thanks for reaching out.
-I've received your request regarding: "[Topic]".
-To help me serve you best, could you reply with:
-1. Your project deadline:
-2. Your budget estimation:
-Our team will review this and respond with a formal quote by [Time].
-=================================================== """
 
     # --- DEFAULT BACKUP SCENARIO ---
     else:
