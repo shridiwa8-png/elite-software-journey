@@ -12,140 +12,153 @@ os.environ["GEMINI_API_KEY"] = DEFAULT_API_KEY
 
 def generate_simulated_blueprint(role, skill, tools, problem):
     """
-    Generates an incredibly specific, custom blueprint if the live API cannot be reached.
-    Analyzes keywords, tools, and roles to match the user's situation exactly.
-    Checks both the problem and the tools boxes for keywords.
+    Generates a highly contextual, dynamic blueprint programmatically.
+    Dissects user tools and problems dynamically to prevent tool-mismatch bugs.
     """
     prob_lower = problem.lower()
-    tools_lower = tools.lower() if tools else ""
-    role_lower = role.lower()
-
-    # --- SCENARIO 1: WHATSAPP / CUSTOMER LEADS (PRIORITIZED FIRST) ---
-    if any(k in prob_lower or k in tools_lower for k in ["whatsapp", "wa", "customer", "lead", "client", "business", "sales", "crm"]):
-        title = "Inbound Customer Intake & CRM Pipeline"
+    tools_list = [t.strip() for t in re.split(r'[,,;,|]', tools)] if tools else []
+    
+    # Clean tool names or fallbacks
+    primary_tool = tools_list[0].title() if (tools_list and tools_list[0]) else "Simple Tracker"
+    secondary_tool = tools_list[1].title() if len(tools_list) > 1 else "Digital Document"
+    
+    # Classification rules
+    is_comm = any(k in prob_lower or any(k in t.lower() for t in tools_list) for k in ["whatsapp", "wa", "email", "gmail", "chat", "message", "lead", "client"])
+    is_data = any(k in prob_lower or any(k in t.lower() for t in tools_list) for k in ["excel", "sheet", "csv", "data", "table", "finance", "number"])
+    is_notion = any(k in prob_lower or any(k in t.lower() for t in tools_list) for k in ["notion", "clutter", "complex", "system", "workspace", "obsidian", "docs"])
+    
+    if is_comm:
+        domain_title = "Inbound Intake & Client Communication Pipeline"
         bottlenecks = [
-            "Scattered Chats: Work inquiries get mixed with family or friend group notifications, leading to delayed responses.",
-            "No Status Visibility: Inability to track where clients are in your pipeline (e.g., waiting, quoted, paid)."
+            f"Scatter Communication Trap: Client requests get mixed up in different channels in {primary_tool}, leading to delayed response times.",
+            "Lack of Status Visibility: No clear tracking of where clients currently stand (e.g., Waiting on Quote, Work In Progress, Paid)."
         ]
-        recommended_system = "Standardized Messaging Templates & visual Kanban tracking."
-        primary_tools = "WhatsApp Business (for Quick Replies)"
-        central_hub = "Notion Board or Trello (simple Inbox-to-Done pipeline)"
-        actions = [
-            "Program Quick Replies: Inside WhatsApp Business, create automated shortcuts like '/intro' and '/pricing' to reply to customers in under 5 seconds.",
-            "Set Up a Tracking Board: Build a simple visual board with columns: 'Inbox', 'Quoting', 'Active Project', and 'Completed'.",
-            "Establish Customer Response Batching: Only reply to non-emergency business chats twice a day (e.g., 10:00 AM and 4:00 PM) to protect your deep-work hours."
-        ]
-        asset_title = "WHATSAPP BUSINESS QUICK REPLY SOP"
-        asset = """===================================================
+        recommended_system = f"A centralized message triage template system built around {primary_tool}."
+        central_hub = f"{primary_tool} + a single plain-text follow-up log"
+        
+        # Skill-based automation mapping
+        if skill == "Beginner":
+            automation_upgrade = "None recommended. Use manual status labels to keep setup friction at absolute zero."
+            actions = [
+                f"Program shortcuts inside {primary_tool}: Create 3 quick-text response templates (e.g., Intro, Pricing, Follow-Up) to reply to clients in 10 seconds.",
+                "Dedicate a batch response block: Only check and reply to inbound client inquiries twice a day to protect your deep-work hours.",
+                "Build a simple spreadsheet log to map out client statuses in real-time."
+            ]
+        else:
+            automation_upgrade = f"Zapier or Make.com rules to automatically log incoming messages from {primary_tool} into your database."
+            actions = [
+                f"Configure Webhook integrations inside {primary_tool} to flag high-value client tags.",
+                "Automate instant notifications to your central tracker when a client fills out an intake form.",
+                "Establish automated trigger replies for after-hours client communications."
+            ]
+            
+        asset_title = f"{primary_tool.upper()} CLIENT RESPONSE SOP"
+        asset = f"""===================================================
 Hello [Name]! Thanks for reaching out.
 I've received your request regarding: "[Topic]".
 To help me serve you best, could you reply with:
 1. Your project deadline:
 2. Your budget estimation:
-Our team will review this and respond with a formal quote by [Time].
+We will review this and respond with an update shortly!
 =================================================== """
 
-    # --- SCENARIO 2: NOTION CONFUSION / OVER-ENGINEERING ---
-    elif any(k in prob_lower or k in tools_lower for k in ["notion", "confusing", "clutter", "complex", "system", "workspace"]):
-        title = "Notion Minimalism & Anti-Clutter Setup"
+    elif is_data:
+        domain_title = f"Minimalist Spreadsheet & {primary_tool} Data Registry"
         bottlenecks = [
-            "The Infinite Canvas Trap: Notion's open-ended templates create massive setup friction and decision fatigue.",
-            "High Maintenance Cost: Spending more time designing database relations, icons, and tags than doing actual work."
+            f"Data Entry Fatigue: Over-engineering columns and formulas inside {primary_tool} causes manual entry friction.",
+            "Zero Data Hygiene: Inputting mismatched date formats or leaving incomplete rows makes filtering impossible."
         ]
-        recommended_system = "A Single-Page Minimalist Sandbox. Drop nested structures, relational rollups, and flashy dashboards. Rebuild around a flat, text-first capture log."
-        primary_tools = "Notion (stripped down to raw plain-text pages)"
-        central_hub = "Google Keep, Apple Notes, or Trello (for ultra-fast capture)"
-        actions = [
-            "The One-Page Rule: Delete your complex database systems. Create a single blank page in Notion called 'Today' and do all your work there.",
-            "Disable Community Templates: Avoid importing bloated multi-page workspace setups that clutter your sidebar and slow down load times.",
-            "Shift to Fast Capture: Use Google Keep or a physical notepad for quick raw notes on-the-go, then paste them to Notion once a week."
-        ]
-        asset_title = "NOTION SKELETON SETUP (COPY & PASTE TO A BLANK PAGE)"
-        asset = """# 🎯 Daily Focus (Max 3 items)
-- [ ] Action item 1
-- [ ] Action item 2
-
-# 📥 Quick Brain Dump (Process daily)
-- Ideas, quick notes, and incoming random thoughts go here...
-
-# 📂 Current Projects Reference
-- Keep links to your active working documents here. No databases, just simple lists!"""
-
-    # --- SCENARIO 3: FORGETTING FOLLOW-UPS / EMAIL MANAGEMENT ---
-    elif any(k in prob_lower or k in tools_lower for k in ["follow-up", "forget", "missed", "remind", "reply", "tracking", "email", "gmail"]):
-        title = "Automated Follow-Up & Gmail Triage System"
-        bottlenecks = [
-            "Passive Inbox Trap: Leaving emails in the inbox without active 'Snooze' or 'Task' flags forces you to rely on raw memory.",
-            "Lack of Active Triggers: Emails quickly get buried under incoming messages, removing the visual cues needed to respond."
-        ]
-        recommended_system = "Inbox Zero with Active Triggers. By converting passive emails into active calendar tasks or snoozing them to a future date, you protect your focus and never let an email slip through the cracks."
+        recommended_system = f"A streamlined, flat spreadsheet setup focused entirely on fast input speed and clean columns."
+        central_hub = f"{primary_tool} (configured with standard data structures)"
         
-        if "gmail" in tools_lower or not tools:
-            primary_tools = "Gmail (Snooze & Tasks integration)"
-            central_hub = "Google Tasks / Google Calendar (Sidebar integration)"
+        if skill == "Beginner":
+            automation_upgrade = "None recommended. Focus purely on consistent, clean manual tracking before attempting automation."
             actions = [
-                "Master the Snooze Button: When you open an email that you can't reply to immediately, click the 'Snooze' clock icon and set it to reappear tomorrow at 9:00 AM.",
-                "Use 'Add to Tasks': Click the little checkmark icon at the top of any email to instantly turn it into a task with a due date in your Google sidebar.",
-                "Set Up Gmail Nudges: Go to Gmail Settings > General > Nudges, and enable 'Suggest emails to reply to' to let Google auto-bump neglected threads."
+                f"Apply the '3-Column Rule' inside {primary_tool}: Freeze your columns to keep your view simple (e.g., Date, Client, Status, Notes).",
+                "Color-code statuses: Set up basic conditional formatting so 'Needs Action' turns soft red and 'Done' turns green.",
+                "Set a weekly registry audit: Dedicate 10 minutes every Friday to clear empty rows and update unresolved data."
             ]
         else:
-            primary_tools = f"{tools} (with scheduling capabilities)"
-            central_hub = "Todoist or Microsoft To-Do"
+            automation_upgrade = f"Automated scripts to export external transaction/lead data directly into {primary_tool}."
             actions = [
-                "Schedule Follow-Up Alarms: Program a recurring daily calendar event at 4:30 PM labeled 'Clear Flagged Emails'.",
-                "Flag & Tag: Use a custom tag/label called '#Waiting-Response' for any email where you are waiting for someone else's action.",
-                "Write Down the Next Step: Never end a task block without scheduling a physical reminder in your calendar for the next follow-up."
+                f"Create data validation dropdown lists inside {primary_tool} to restrict invalid manual text inputs.",
+                "Set up conditional formulas to auto-calculate key business metrics.",
+                f"Use API integrations to push summary data from {primary_tool} directly to a performance dashboard."
             ]
             
-        asset_title = "DAILY EMAIL & TASK SYSTEM CHECKLIST"
-        asset = """[ ] Morning Sweep (15 mins): Scan inbox. Archive immediately if no action is needed.
-[ ] The Snooze Rule: If an email needs a response on a later date, snooze it. Clear it out of sight!
-[ ] The Task Convert: If an email requires complex action, add it to your Tasks sidebar with a due date.
-[ ] Waiting Label: Tag outgoing emails that need a reply with '#Waiting'. Review this tag twice a week."""
+        asset_title = f"{primary_tool.upper()} DATA INPUT CHECKLIST"
+        asset = """[ ] Date: [YYYY-MM-DD]
+[ ] Category: [Dropdown Option Selected]
+[ ] Value/Cost: [Numerical Value]
+[ ] Current Status: [Pending / Completed / Cancelled]
+[ ] Notes: [Short plain-text description]"""
 
-    # --- SCENARIO 4: STUDENTS & ACADEMICS ---
-    elif role_lower == "student" or any(k in prob_lower or k in tools_lower for k in ["study", "assignment", "homework", "exam", "class"]):
-        title = "Student Deadline & Focus Scheduler"
+    elif is_notion:
+        domain_title = f"{primary_tool} Single-Page Sandbox Layout"
         bottlenecks = [
-            "Reactive Studying: Scrambling for exams and deadlines at the last second due to scattered schedule overviews.",
-            "Divided Contexts: Separating lecture notes, homework schedules, and project timelines across too many apps."
+            f"The Infinite Workspace Trap: Over-complicating {primary_tool} templates with relational databases and tags.",
+            "High Maintenance Cost: Spending more time sorting folders and icons than doing actual deep work."
         ]
-        recommended_system = "Centralized Academic Deadline Log. Bring your syllabus deadlines, lecture schedule, and action items onto a single unified weekly tracker."
-        primary_tools = "Google Calendar + simple text lists"
-        central_hub = "Google Sheets or a plain physical planner"
-        actions = [
-            "The Syllabus Audit: Spend 30 minutes putting every single exam and assignment deadline from your syllabi directly into Google Calendar with a 3-day notification warning.",
-            "Set Weekly Study Blocks: Treat study hours like real classes. Block out recurring 2-hour windows on your calendar and turn off all phone notifications.",
-            "Create a Daily Top 3: Every night, write down the top three most important tasks for tomorrow so you wake up with a clear action plan."
-        ]
-        asset_title = "STUDENT WEEKLY REVIEW CHECKLIST"
-        asset = """[ ] Sunday Night Audit: Check calendar deadlines for the upcoming 2 weeks.
-[ ] Slide Prep: Download and organize incoming lecture slides into specific Google Drive folders.
-[ ] Buffer Blocks: Allocate two 90-minute 'Catch-Up Blocks' on Thursday and Friday to manage overrun homework.
-[ ] Task Checkoff: Archive completed class materials out of your immediate workspace."""
+        recommended_system = f"A flat, text-first capture sandbox inside {primary_tool} to eliminate system clutter."
+        central_hub = f"{primary_tool} (stripped down to raw plain-text pages)"
+        
+        if skill == "Beginner":
+            automation_upgrade = "None recommended. Keep it fully manual to prevent setup overhead and decision fatigue."
+            actions = [
+                f"The One-Page Rule: Delete complex database links in {primary_tool}. Create a single blank page called 'Workspace' and do everything there.",
+                "Disable flashy configurations: Stick to standard bullet points and toggle lists instead of building complex properties.",
+                f"Set up a 'Brain Dump' list at the very top of {primary_tool} to catch stray thoughts instantly."
+            ]
+        else:
+            automation_upgrade = f"Light keyboard shortcuts or web-clipper rules to instantly drop reference links into your central page."
+            actions = [
+                f"Configure template buttons inside {primary_tool} to spawn clean daily task logs with one click.",
+                "Set up synced blocks to make your main priorities visible across all active sub-folders.",
+                "Link project logs programmatically to speed up your navigation time."
+            ]
+            
+        asset_title = f"{primary_tool.upper()} MINIMALIST HOME BASE SKELETON"
+        asset = """# 🎯 Daily Focus (Max 3 priorities)
+- [ ] Priority 1
+- [ ] Priority 2
 
-    # --- DEFAULT BACKUP SCENARIO ---
+# 📥 Fast Capture Dump
+- Log incoming raw ideas here...
+
+# 📂 Reference Hub
+- Paste direct links to working files or active tasks here."""
+
     else:
-        title = "Visual Operations & Central Tracker"
+        # Default fallback scenario (Dynamic standard task pipeline)
+        domain_title = "Minimalist Operations & Visual Task Tracker"
         bottlenecks = [
-            "Manual Tracking Friction: Relying on memory or manual updates causes deals to drop.",
-            "Lack of Centralized Intake: Inbound inquiries scatter across random platforms."
+            f"The Mental Load Trap: Trying to remember tasks inside {primary_tool} instead of writing them down.",
+            f"Friction of Tracking: Setting up a system in {primary_tool} that is too hard to maintain daily."
         ]
-        recommended_system = "Visual Kanban Pipeline (Inbox to Done)."
-        primary_tools = f"{tools if tools else 'Basic templates'}"
-        central_hub = "Trello or Notion"
-        actions = [
-            "Set up your Kanban Board: Columns for Inbox, Active, Waiting, and Done.",
-            "Draft 3 standard templates to respond to common inquiries in under 10 seconds.",
-            "The 15-Minute Rule: Dedicate the last 15 minutes of every workday to updating ticket statuses."
-        ]
-        asset_title = "CLIENT TRACKER PIPELINE ASSET"
-        asset = """[ ] Client Name:
-[ ] Intake Date:
-[ ] Status: [Inbox / Active / Waiting / Done]
-[ ] Next Action: """
+        recommended_system = "A clean 3-step visual workflow pipeline (Inbox -> Active -> Completed)."
+        central_hub = f"{primary_tool} or simple digital checklist"
+        
+        if skill == "Beginner":
+            automation_upgrade = "None recommended. Use raw checklists to build consistent daily workflow habits."
+            actions = [
+                f"Write everything down: Empty your thoughts into {primary_tool} the moment they appear.",
+                "Set your daily Top 3: Never start a workday with more than three priority tasks.",
+                "Keep tasks small: Break down big projects into action steps that take under 15 minutes."
+            ]
+        else:
+            automation_upgrade = f"Automated reminders inside {primary_tool} to flag tasks that are overdue."
+            actions = [
+                "Establish recurring tasks for your daily review blocks.",
+                "Integrate your task list with your calendar so project times block out automatically.",
+                "Set up automatic archive rules to keep completed tasks out of your immediate workspace."
+            ]
+            
+        asset_title = "DAILY TASK PIPELINE ASSET"
+        asset = """[ ] Task Name:
+[ ] Estimated Time (mins):
+[ ] Due Date:
+[ ] Current Stage: [Inbox / Doing / Done]"""
 
-    # Build the beautifully formatted, customized markdown output
     return f"""# 🎯 Dynamic Problem Analysis
 
 You are operating as a **{role}** with a technology confidence level of **{skill}**.
@@ -153,13 +166,13 @@ You currently utilize: `{tools if tools else "No tools specified"}`.
 Your custom problem input:
 > "{problem}"
 
-Based on your operational profile, we have identified these main bottlenecks:
+Based on your operational profile, we have programmatically identified these main bottlenecks:
 * **{bottlenecks[0]}**
 * **{bottlenecks[1]}**
 
 ---
 
-# 🛠 Recommended System: {title}
+# 🛠 Recommended System: {domain_title}
 
 {recommended_system}
 
@@ -167,18 +180,18 @@ Based on your operational profile, we have identified these main bottlenecks:
 
 # 📦 Recommended Tools
 
-* **Primary Focus:** `{primary_tools}`
+* **Primary Focus:** `{primary_tool}`
 * **Central Tracking Hub:** {central_hub}
-* **Automation (Optional upgrade):** Zapier or Make.com to auto-create tickets from incoming messages
+* **Automation (Optional upgrade):** {automation_upgrade}
 
 ---
 
 # 🔄 Step-by-Step Workflow
 
-1. **Intake:** Every inquiry or project request is captured immediately in your tracking hub.
-2. **Acknowledge / Triage:** Send a template response or tag the action item to clean it out of your workspace.
-3. **Action:** Focus only on items in your active work column.
-4. **Resolution:** Move items to 'Done' and schedule a clean follow-up trigger.
+1. **Capture:** Every inbound inquiry or data point is immediately written into `{primary_tool}`.
+2. **Process:** Move items to your active queue, filtering out unnecessary background steps.
+3. **Focus:** Work only on the task at the top of your active columns.
+4. **Clean:** Dedicate 10 minutes at the end of every day to archive completed logs.
 
 ---
 
@@ -204,7 +217,7 @@ Based on your operational profile, we have identified these main bottlenecks:
 
 # 🔮 Future Upgrade
 
-Integrate automatic rules between `{tools if tools else "your workspace"}` and your tracking system so cards populate in real-time with zero manual typing.
+Maintain this exact manual operational habit for 2 consecutive weeks. Once the routine is comfortable, look at introducing low-friction scripting options inside your tools to save manual copy-pasting time.
 """
 
 st.set_page_config(
