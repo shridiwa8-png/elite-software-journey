@@ -14,13 +14,14 @@ def generate_simulated_blueprint(role, skill, tools, problem):
     """
     Generates an incredibly specific, custom blueprint if the live API cannot be reached.
     Analyzes keywords, tools, and roles to match the user's situation exactly.
+    Checks both the problem and the tools boxes for keywords.
     """
     prob_lower = problem.lower()
     tools_lower = tools.lower() if tools else ""
     role_lower = role.lower()
 
     # --- SCENARIO 1: FORGETTING FOLLOW-UPS / EMAIL MANAGEMENT ---
-    if any(k in prob_lower for k in ["follow-up", "forget", "missed", "remind", "reply", "tracking"]):
+    if any(k in prob_lower or k in tools_lower for k in ["follow-up", "forget", "missed", "remind", "reply", "tracking", "email", "gmail"]):
         title = "Automated Follow-Up & Gmail Triage System"
         bottlenecks = [
             "Passive Inbox Trap: Leaving emails in the inbox without active 'Snooze' or 'Task' flags forces you to rely on raw memory.",
@@ -52,7 +53,7 @@ def generate_simulated_blueprint(role, skill, tools, problem):
 [ ] Waiting Label: Tag outgoing emails that need a reply with '#Waiting'. Review this tag twice a week."""
 
     # --- SCENARIO 2: NOTION CONFUSION / OVER-ENGINEERING ---
-    elif any(k in prob_lower for k in ["notion", "confusing", "clutter", "complex", "system"]):
+    elif any(k in prob_lower or k in tools_lower for k in ["notion", "confusing", "clutter", "complex", "system", "workspace"]):
         title = "Notion Minimalism & Anti-Clutter Setup"
         bottlenecks = [
             "The Infinite Canvas Trap: Notion's open-ended templates create massive setup friction and decision fatigue.",
@@ -78,7 +79,7 @@ def generate_simulated_blueprint(role, skill, tools, problem):
 - Keep links to your active working documents here. No databases, just simple lists!"""
 
     # --- SCENARIO 3: STUDENTS & ACADEMICS ---
-    elif role_lower == "student" or any(k in prob_lower for k in ["study", "assignment", "homework", "exam", "class"]):
+    elif role_lower == "student" or any(k in prob_lower or k in tools_lower for k in ["study", "assignment", "homework", "exam", "class"]):
         title = "Student Deadline & Focus Scheduler"
         bottlenecks = [
             "Reactive Studying: Scrambling for exams and deadlines at the last second due to scattered schedule overviews.",
@@ -99,7 +100,7 @@ def generate_simulated_blueprint(role, skill, tools, problem):
 [ ] Task Checkoff: Archive completed class materials out of your immediate workspace."""
 
     # --- SCENARIO 4: WHATSAPP / CUSTOMER LEADS ---
-    elif any(k in prob_lower for k in ["whatsapp", "customer", "lead", "client", "business", "sales"]):
+    elif any(k in prob_lower or k in tools_lower for k in ["whatsapp", "customer", "lead", "client", "business", "sales", "crm"]):
         title = "Inbound Customer Intake & CRM Pipeline"
         bottlenecks = [
             "Scattered Chats: Work inquiries get mixed with family or friend group notifications, leading to delayed responses.",
@@ -214,7 +215,6 @@ st.set_page_config(
 
 # App Sidebar for Key validation and Sandbox toggle
 with st.sidebar:
-    # Use a native large emoji header instead of an external URL to prevent broken images
     st.markdown("<h1 style='text-align: center; font-size: 4rem; margin-bottom: 0; padding-bottom: 0;'>🦤</h1>", unsafe_allow_html=True)
     st.title("DoDo Controls")
     st.markdown("Use this panel to manage your system settings, API keys, and execution environment.")
