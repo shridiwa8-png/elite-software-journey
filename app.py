@@ -28,12 +28,12 @@ def generate_simulated_blueprint(role, skill, tools, problem):
     is_notion = any(k in prob_lower or any(k in t.lower() for t in tools_list) for k in ["notion", "clutter", "complex", "system", "workspace", "obsidian", "docs"])
     
     if is_comm:
-        domain_title = "Inbound Intake & Client Communication Pipeline"
+        domain_title = f"Simple {primary_tool} Reply List"
         bottlenecks = [
             f"Scatter Communication Trap: Client requests get mixed up in different channels in {primary_tool}, leading to delayed response times.",
             "Lack of Status Visibility: No clear tracking of where clients currently stand (e.g., Waiting on Quote, Work In Progress, Paid)."
         ]
-        recommended_system = f"A centralized message triage template system built around {primary_tool}."
+        recommended_system = f"A simple list of copy-paste response templates inside {primary_tool} so you can reply in seconds."
         central_hub = f"{primary_tool} + a single plain-text follow-up log"
         
         # Skill-based automation mapping
@@ -63,12 +63,12 @@ We will review this and respond with an update shortly!
 =================================================== """
 
     elif is_data:
-        domain_title = f"Minimalist Spreadsheet & {primary_tool} Data Registry"
+        domain_title = f"Simple {primary_tool} Table Setup"
         bottlenecks = [
             f"Data Entry Fatigue: Over-engineering columns and formulas inside {primary_tool} causes manual entry friction.",
             "Zero Data Hygiene: Inputting mismatched date formats or leaving incomplete rows makes filtering impossible."
         ]
-        recommended_system = f"A streamlined, flat spreadsheet setup focused entirely on fast input speed and clean columns."
+        recommended_system = f"A clean, straightforward {primary_tool} sheet with only the columns you actually need."
         central_hub = f"{primary_tool} (configured with standard data structures)"
         
         if skill == "Beginner":
@@ -94,12 +94,12 @@ We will review this and respond with an update shortly!
 [ ] Notes: [Short plain-text description]"""
 
     elif is_notion:
-        domain_title = f"{primary_tool} Single-Page Sandbox Layout"
+        domain_title = f"Single-Page {primary_tool} Notebook"
         bottlenecks = [
             f"The Infinite Workspace Trap: Over-complicating {primary_tool} templates with relational databases and tags.",
             "High Maintenance Cost: Spending more time sorting folders and icons than doing actual deep work."
         ]
-        recommended_system = f"A flat, text-first capture sandbox inside {primary_tool} to eliminate system clutter."
+        recommended_system = f"A single, blank page inside {primary_tool} to brain-dump tasks without any database clutter."
         central_hub = f"{primary_tool} (stripped down to raw plain-text pages)"
         
         if skill == "Beginner":
@@ -130,12 +130,12 @@ We will review this and respond with an update shortly!
 
     else:
         # Default fallback scenario (Dynamic standard task pipeline)
-        domain_title = "Minimalist Operations & Visual Task Tracker"
+        domain_title = f"Simple {primary_tool} Task List"
         bottlenecks = [
             f"The Mental Load Trap: Trying to remember tasks inside {primary_tool} instead of writing them down.",
             f"Friction of Tracking: Setting up a system in {primary_tool} that is too hard to maintain daily."
         ]
-        recommended_system = "A clean 3-step visual workflow pipeline (Inbox -> Active -> Completed)."
+        recommended_system = f"A simple 3-step checklist (To Do, Doing, Done) to track your daily progress."
         central_hub = f"{primary_tool} or simple digital checklist"
         
         if skill == "Beginner":
